@@ -1,0 +1,56 @@
+name: build-stable-soda-arch
+on:
+  workflow_dispatch:
+  push:
+    branches: [ soda ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:base-20220213.0.47747
+
+    steps:        
+      - uses: actions/checkout@v2
+      - name: Compile
+        run: |
+          # Enable multilib for i386 deps
+          echo -e "[multilib]\nInclude = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
+          
+          # Set pacman archive for old glibc
+          echo "Server=https://archive.archlinux.org/repos/2022/02/08/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist
+          
+          pacman -Syyuu --noconfirm base-devel texlive-core sudo git wget schedtool
+          
+          # Clone wine-tkg-git repo
+          git clone https://github.com/Frogging-Family/wine-tkg-git
+          cd wine-tkg-git/wine-tkg-git
+          
+          # Set sudoers NOPASSWD rule to avoid asking for sudo password
+          useradd user -G wheel && echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+          chown user -R .
+          
+          # Get/set the soda recipe
+          mkdir -p /home/user/.config/frogminer
+          curl https://raw.githubusercontent.com/bottlesdevs/build-tools/main/runners/vaniglia/wine-tkg-valve.cfg > /home/user/.config/frogminer/wine-tkg.cfg
+          chown user -R /home/user
+          
+          # Place custom Soda patches
+          # curl -o wine-tkg-userpatches/0001-remove-some-winecfg-features.mypatch https://raw.githubusercontent.com/bottlesdevs/build-tools/main/runners/vaniglia/patches/0001-remove-some-winecfg-features.mypatch
+          
+          # Workaround for jack&jack2 conflict https://github.com/Frogging-Family/wine-tkg-git/issues/237
+          sed -i "/'jack2'                 'lib32-jack2'/d" PKGBUILD
+          sed -i "/'gst-plugins-good'      'lib32-gst-plugins-good'/d" PKGBUILD 
+          
+          # start build
+          su user -c "yes|PKGDEST=/tmp/wine-tkg makepkg --noconfirm -s"
+          
+      - name: Package
+        run: |
+          cd /tmp/wine-tkg/
+          tar --use-compress-program=unzstd -xvf wine-tkg-*
+          mv usr /tmp/soda-x86_64
+          cd /tmp && tar cJvf soda-x86_64.tar.xz soda-x86_64
+          
+      - name: Upload to Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: soda
