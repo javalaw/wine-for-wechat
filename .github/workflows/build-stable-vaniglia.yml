@@ -15,7 +15,7 @@ jobs:
           path: bottlesdevs_wine
 
       - name: Get release version
-        working-directory: /home/runner/work/wine/wine/bottlesdevs_wine
+        working-directory: /home/runner/work/wine-for-wechat/wine-for-wechat/bottlesdevs_wine
         id: vars
         run: |
           wine_version=$(cat VERSION)
@@ -34,8 +34,8 @@ jobs:
         run: ./fetch.sh -r ${{ steps.vars.outputs.release_version }}
       
       - name: Patch for Wechat
-        working-directory: /home/runner/work/wine/wine/wine_64_source
-        run: patch -p1 < /home/runner/work/wine/wine/bottlesdevs_wine/wine-wechat.patch
+        working-directory: /home/runner/work/wine-for-wechat/wine-for-wechat/wine_64_source
+        run: patch -p1 < /home/runner/work/wine-for-wechat/wine-for-wechat/bottlesdevs_wine/wine-wechat.patch
 
       - name: Launch environment.sh
         working-directory: /home/runner/work/build-tools/runners/vaniglia
@@ -72,5 +72,5 @@ jobs:
           prerelease: false
           automatic_release_tag: "${{ steps.vars.outputs.release_version }}"
           title: "Vaniglia ${{ steps.vars.outputs.release_version }}"
-          files: "/home/runner/work/wine/wine/vaniglia-${{ steps.vars.outputs.release_version }}-x86_64.tar.gz"
+          files: "/home/runner/work/wine-for-wechat/wine-for-wechat/vaniglia-${{ steps.vars.outputs.release_version }}-x86_64.tar.gz"
           
