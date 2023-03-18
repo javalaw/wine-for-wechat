@@ -41,9 +41,9 @@ jobs:
         working-directory: /home/runner/work/build-tools/runners/vaniglia
         run: ./environment.sh
       
-      - name: Launch patch-josh-flat-theme.sh
-        working-directory: /home/runner/work/build-tools/runners/vaniglia
-        run: ./patch-josh-flat-theme.sh
+      # - name: Launch patch-josh-flat-theme.sh
+      #   working-directory: /home/runner/work/build-tools/runners/vaniglia
+      #   run: ./patch-josh-flat-theme.sh
       
       - name: Launch patch-staging.sh
         working-directory: /home/runner/work/build-tools/runners/vaniglia
