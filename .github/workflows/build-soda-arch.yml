@@ -35,7 +35,8 @@ jobs:
           
           # Place custom Soda patches
           # curl -o wine-tkg-userpatches/0001-remove-some-winecfg-features.mypatch https://raw.githubusercontent.com/bottlesdevs/build-tools/main/runners/vaniglia/patches/0001-remove-some-winecfg-features.mypatch
-          
+          curl -o wine-tkg-userpatches/wine-for-wechat.mypatch https://raw.githubusercontent.com/javalaw/wine-for-wechat/stable/wine-wechat.patch
+
           # Workaround for jack&jack2 conflict https://github.com/Frogging-Family/wine-tkg-git/issues/237
           sed -i "/'jack2'                 'lib32-jack2'/d" PKGBUILD
           sed -i "/'gst-plugins-good'      'lib32-gst-plugins-good'/d" PKGBUILD 
