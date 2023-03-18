@@ -37,10 +37,6 @@ jobs:
         working-directory: /home/runner/work/build-tools/runners/vaniglia
         run: ./fetch.sh -r ${{ steps.vars.outputs.release_version }}
       
-      - name: Patch for Wechat
-        working-directory: /home/runner/work/wine/wine
-        run: patch -p1 < /home/runner/work/wine/wine/bottlesdevs_wine/wine-wechat.patch
-
       - name: Launch environment.sh
         working-directory: /home/runner/work/build-tools/runners/vaniglia
         run: ./environment.sh
@@ -53,6 +49,10 @@ jobs:
         working-directory: /home/runner/work/build-tools/runners/vaniglia
         run: ./patch-staging.sh -r ${{ steps.vars.outputs.release_version }}
       
+      - name: Patch for Wechat
+        working-directory: /home/runner/work/wine/wine
+        run: patch -p1 < /home/runner/work/wine/wine/bottlesdevs_wine/wine-wechat.patch
+
       - name: Launch build-tools.sh
         working-directory: /home/runner/work/build-tools/runners/vaniglia
         run: ./build-tools.sh
