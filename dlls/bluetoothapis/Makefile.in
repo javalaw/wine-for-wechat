@@ -1,3 +1,0 @@
-MODULE    = bluetoothapis.dll
-
-EXTRADLLFLAGS = -Wb,--prefer-native

@@ -1,4 +1,0 @@
-MODULE    = bthprops.cpl
-
-C_SRCS = \
-	main.c

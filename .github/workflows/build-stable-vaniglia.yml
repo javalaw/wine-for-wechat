@@ -1,0 +1,76 @@
+name: build-stable-vaniglia
+on:
+  push:
+    branches: [ stable ]
+  pull_request:
+    branches: [ stable ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: stable
+          path: bottlesdevs_wine
+
+      - name: Get release version
+        working-directory: /home/runner/work/wine/wine/bottlesdevs_wine
+        id: vars
+        run: |
+          wine_version=$(cat VERSION)
+          echo "::set-output name=release_version::${wine_version:13}"
+
+      - name: Fetching Build Tools
+        working-directory: /home/runner/work/
+        run: git clone https://github.com/bottlesdevs/build-tools.git
+      
+      - name: Make build scripts executable
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: chmod +x *
+      
+      - name: Launch fetch.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./fetch.sh -r ${{ steps.vars.outputs.release_version }}
+      
+      - name: Patch for Wechat
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: patch -p1 < ../wine-wechat.patch
+
+      - name: Launch environment.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./environment.sh
+      
+      - name: Launch patch-josh-flat-theme.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./patch-josh-flat-theme.sh
+      
+      - name: Launch patch-staging.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./patch-staging.sh -r ${{ steps.vars.outputs.release_version }}
+      
+      - name: Launch build-tools.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./build-tools.sh
+      
+      - name: Launch build64.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./build64.sh
+      
+      - name: Launch build32.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./build32.sh
+      
+      - name: Launch package.sh
+        working-directory: /home/runner/work/build-tools/runners/vaniglia
+        run: ./package.sh
+        
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          draft: false
+          prerelease: false
+          automatic_release_tag: "${{ steps.vars.outputs.release_version }}"
+          title: "Vaniglia ${{ steps.vars.outputs.release_version }}"
+          files: "/home/runner/work/wine/wine/vaniglia-${{ steps.vars.outputs.release_version }}-x86_64.tar.gz"
+          
