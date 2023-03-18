@@ -13,9 +13,13 @@ jobs:
         with:
           ref: stable
           path: bottlesdevs_wine
+      
+      - name: COPY Project
+        working-directory: /home/runner/work/
+        run: mkdir -p wine/wine && cp -r wine-for-wechat/wine-for-wechat/* wine/wine/
 
       - name: Get release version
-        working-directory: /home/runner/work/wine-for-wechat/wine-for-wechat/bottlesdevs_wine
+        working-directory: /home/runner/work/wine/wine/bottlesdevs_wine
         id: vars
         run: |
           wine_version=$(cat VERSION)
@@ -34,8 +38,8 @@ jobs:
         run: ./fetch.sh -r ${{ steps.vars.outputs.release_version }}
       
       - name: Patch for Wechat
-        working-directory: /home/runner/work/wine
-        run: patch -p1 < /home/runner/work/wine-for-wechat/wine-for-wechat/bottlesdevs_wine/wine-wechat.patch
+        working-directory: /home/runner/work/wine/wine
+        run: patch -p1 < /home/runner/work/wine/wine/bottlesdevs_wine/wine-wechat.patch
 
       - name: Launch environment.sh
         working-directory: /home/runner/work/build-tools/runners/vaniglia
