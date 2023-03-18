@@ -34,7 +34,7 @@ jobs:
         run: ./fetch.sh -r ${{ steps.vars.outputs.release_version }}
       
       - name: Patch for Wechat
-        working-directory: /home/runner/work/wine-for-wechat/wine-for-wechat/wine_64_source
+        working-directory: /home/runner/work/wine/wine/wine_64_source
         run: patch -p1 < /home/runner/work/wine-for-wechat/wine-for-wechat/bottlesdevs_wine/wine-wechat.patch
 
       - name: Launch environment.sh
